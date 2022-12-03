@@ -5,6 +5,7 @@ from dyntapy import relabel_graph
 from dyntapy.demand_data import od_graph_from_matrix
 from osmnx.distance import euclidean_dist_vec
 
+
 #building our own two rout DiGraph route (using nodes)
 def makeOwnToyNetwork(form):
     if form == 'complex':
@@ -150,6 +151,63 @@ def makeOwnToyNetwork(form):
         g = relabel_graph(g)  # adding link and node ids, connectors and centroids
         odCsvFile = 'ODmatrixSimple.csv'
         return g, ODcentroids, odCsvFile
+    elif form == 'y-network':
+        g = nx.DiGraph()
+        ebunch_of_nodes = [
+            (0, {"x_coord":0, "y_coord": 30}),
+            (1, {"x_coord": 0, "y_coord": 0}),
+            (2, {"x_coord": 15, "y_coord": 15}),
+            (3, {"x_coord": 30, "y_coord": 15}),
+            
+        ]
+        nodes_signalized = [
+            0,
+            0,
+            1,
+            0,
+        ]
+
+        is_origin  = [
+            1,
+            1,
+            0,
+            0,
+        ]
+        g.add_nodes_from(ebunch_of_nodes)
+
+        ebunch_of_edges = [
+            (0, 2),
+            (1, 2),
+            (2, 3),
+            
+        ]
+
+        bottle_neck_edges = [
+            (0, 2),
+            (1, 2),
+            (2, 3),
+            
+        ]
+
+        bottle_neck_capacity_speed =   [
+            (100, 80),
+            (150, 80),
+            (250, 80),
+            
+        ]
+
+        is_signalized = [
+            1,
+            1,
+            0,
+        ]
+        g.add_edges_from(ebunch_of_edges)
+        set_network_attributes(g, bottle_neck_edges, bottle_neck_capacity_speed, is_signalized, nodes_signalized, is_origin)
+
+        ODcentroids = np.array([np.array([0,0,15,30]), np.array([30,0,15,15])])
+        g = relabel_graph(g)  # adding link and node ids, connectors and centroids
+        return g, ODcentroids
+
 
 #modified dyntapy function to change the capacity and the speed of each link
 def set_network_attributes(g, bottleneck_edges, bottle_neck_capacity_speed, is_signalized = [], nodes_signalized=[], is_origin = []):
@@ -215,7 +273,4 @@ def getIntersections(g):
         links[data["link_id"]] = data["signalized"]
     return intersections, intersecting_links, links
 
-
-
-                
     

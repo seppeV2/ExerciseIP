@@ -1,7 +1,7 @@
 from math import inf
 import numpy as np
 from dyntapy.settings import parameters
-from ownFunctions import getIntersections
+from SourceCode.ownFunctions import getIntersections
 
 
 bpr_b = parameters.static_assignment.bpr_beta

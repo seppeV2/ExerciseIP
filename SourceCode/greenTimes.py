@@ -1,7 +1,7 @@
 import numpy as np
 from dyntapy.settings import parameters
-from ownFunctions import getIntersections
-from cost_functions import __bpr_green_cost_single
+from SourceCode.ownFunctions import getIntersections
+from SourceCode.cost_functions import __bpr_green_cost_single
 bpr_b = parameters.static_assignment.bpr_beta
 bpr_a = parameters.static_assignment.bpr_alpha
 msa_delta = 10**-5
@@ -119,7 +119,7 @@ def safety_greens(greens):
 def equisaturationGreenTimes(caps, flows, initial_greens, ff_tts, method):
     #now calculate the green times iteratively 
     greens,equality = msa_green_times(caps, flows, initial_greens, ff_tts, method)
-    print('check if the policy constraint is satisfied: {}\n'.format(equality))
+    #print('check if the policy constraint is satisfied: {}\n'.format(equality))
     print('MSA Equisaturation Green Times = {}'.format(greens))
     
 
@@ -168,13 +168,12 @@ def P0policyGreenTimes(caps, flows, initial_greens, ff_tts, method):
 
     #now calculate the green times iteratively 
     greens,equality = msa_green_times(caps, flows, initial_greens, ff_tts, method)
-    print('check if the policy constraint is satisfied: {}\n'.format(equality))
+    #print('check if the policy constraint is satisfied: {}\n'.format(equality))
     print('MSA P0 Green Times = {}'.format(greens))
     
 
     #this is needed to compare the results
     theoreticalGreenTime = theoreticalP0Greens(caps, flows, ff_tts)
-    print('Theoretical P0 Green Times = {}\n'.format(theoreticalGreenTime))
     return greens,np.diff(equality)[0], []
 
 #finding the theoretical P0 green times

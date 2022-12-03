@@ -10,7 +10,7 @@ from dyntapy.results import StaticResult, get_skim
 from dyntapy._context import iteration_states
 from dyntapy.assignments import StaticAssignment
 
-from cost_functions import __bpr_green_cost, __webster_two_term_green
+from SourceCode.cost_functions import __bpr_green_cost, __webster_two_term_green
 
 from dyntapy.graph_utils import (
     dijkstra_all,
@@ -28,7 +28,7 @@ msa_delta = 10**-4
 
 class GreenStaticAssignment(StaticAssignment):
 
-    def run_greens(self, methodAl, greenTimes , method, g, store_iterations=False, previous_flow=False, **kwargs):
+    def run_greens(self, methodAl, greenTimes , method, g, ff_tt, store_iterations=False, previous_flow=False, **kwargs):
        
         dyntapy._context.running_assignment = (
             self  # making the current assignment available as global var
@@ -38,7 +38,7 @@ class GreenStaticAssignment(StaticAssignment):
 
         if methodAl == "msa":
             costs, flows, gap_definition, gap, free_flow, dos = msa_green_flow_averaging(
-                self.internal_network, self.internal_demand, greenTimes ,method, g ,store_iterations
+                self.internal_network, self.internal_demand, greenTimes ,method, g, ff_tt ,store_iterations
             )
             result = StaticResult(
                 costs,
@@ -59,17 +59,17 @@ class GreenStaticAssignment(StaticAssignment):
 
 
 def msa_green_flow_averaging(
-    network: Network, demand: InternalStaticDemand, greenTimesDic: dict , method: str, g: any,  store_iterations=False, 
+    network: Network, demand: InternalStaticDemand, greenTimesDic: dict , method: str, g: any, ff_tt, store_iterations=False, 
 ):
     gaps = []
     converged = False
     k = int(0)
     f1 = np.zeros(network.tot_links)
     f2 = f1.copy()
-    ff_tt = network.links.length / network.links.free_speed
+    
 
     #hardcoded (see path 1-3 as 1 link with twice the free flow cost)
-    ff_tt_adjusted = [ff_tt[0], 0.0001, ff_tt[2], 2*ff_tt[3]]
+    #ff_tt = [ff_tt[0], 0.0001, ff_tt[2], 2*ff_tt[3]]
 
     greenTimes = list(greenTimesDic.values())
     dos = None
@@ -79,7 +79,7 @@ def msa_green_flow_averaging(
             if method == 'bpr':
                 [costs, dos] = __bpr_green_cost(
                     capacities=network.links.capacity,
-                    ff_tts=ff_tt_adjusted,
+                    ff_tts=ff_tt,
                     flows=f2,
                     g_times = greenTimes,
                     g= g
@@ -87,7 +87,7 @@ def msa_green_flow_averaging(
             elif method == 'WebsterTwoTerm':
                 [costs,dos] = __webster_two_term_green(
                     capacities=network.links.capacity,
-                    ff_tts=ff_tt_adjusted,
+                    ff_tts=ff_tt,
                     flows=f2,
                     g_times = greenTimes,
                     g = g,
@@ -96,7 +96,7 @@ def msa_green_flow_averaging(
             if method == 'bpr':
                 [costs, dos] = __bpr_green_cost(
                     capacities=network.links.capacity,
-                    ff_tts=ff_tt_adjusted,
+                    ff_tts=ff_tt,
                     flows=f2,
                     g_times = greenTimes,
                     g=g
@@ -104,7 +104,7 @@ def msa_green_flow_averaging(
             elif method == 'WebsterTwoTerm':
                 [costs, dos] = __webster_two_term_green(
                     capacities=network.links.capacity,
-                    ff_tts=ff_tt_adjusted,
+                    ff_tts=ff_tt,
                     flows=f2,
                     g_times = greenTimes,
                     g = g,
@@ -155,7 +155,7 @@ def msa_green_flow_averaging(
                 )
                 iteration_states.append(result)
         
-    return best_costs, best_flow_vector, gap_definition, gaps, ff_tt_adjusted, dos
+    return best_costs, best_flow_vector, gap_definition, gaps, ff_tt, dos
 """ 
 def aon_adjusted(demand: InternalStaticDemand, costs, network: Network):
     out_links = network.nodes.out_links

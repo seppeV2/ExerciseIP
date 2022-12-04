@@ -125,8 +125,7 @@ def main(demand, methodCost, methodGreen):
     
 
     graph = show_network(g, flows = result.flows, euclidean=True,return_plot=True, notebook = True)
-    export_png(graph, filename=str(pathlib.Path(__file__).parent)+'/summaryFiles/rawFigures/network.png' )
-    listOfPlots = ['network.png']
+    listOfPlots = []
     if plot:
         ## graph plots 
         """ plt.figure()

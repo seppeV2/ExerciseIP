@@ -22,7 +22,7 @@ from bokeh.io import export_png
 def main(demand, methodCost, methodGreen):
 
 
-    plot = True
+    plot = False
 
     #setup
     print("STARTING SETUP")

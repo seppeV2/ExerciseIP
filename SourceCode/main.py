@@ -162,7 +162,7 @@ def main(demand, methodCost, methodGreen):
             
 
     print(summary_string)
-    create_summary(listOfPlots, summary_string, methodCost, methodGreen, demand )
+    #create_summary(listOfPlots, summary_string, methodCost, methodGreen, demand )
     return graph, result.flows
 
 

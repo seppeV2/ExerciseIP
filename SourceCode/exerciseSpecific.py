@@ -23,7 +23,7 @@ def assign(method: str, g, centroids):
     result = assignment.run('msa')
     ff_tt = assignment.internal_network.links.length / assignment.internal_network.links.free_speed
     greens,_, _ = get_green_times(assignment.internal_network.links.capacity,result.flows,assignment, method, initial_greens, g, ff_tt)
-    print('Link costs: link 1 = {}, link 2 = {}'.format(result.link_costs[0], result.link_costs[1]))
+    print('Link costs: link 1 = {}, link 2 = {}'.format(round(result.link_costs[0],3), round(result.link_costs[1],3)))
     print('Link flows: link 1 = {}, link 2 = {}'.format(result.flows[0], result.flows[1]))
  
     return result.flows, greens

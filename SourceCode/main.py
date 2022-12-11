@@ -14,6 +14,11 @@ from SourceCode.dyntapy_green_time_change import GreenStaticAssignment
 from SourceCode.greenTimes import get_green_times
 from bokeh.resources import CDN
 from bokeh.io import export_png
+from dyntapy.settings import parameters
+
+
+bpr_b = parameters.static_assignment.bpr_beta
+bpr_a = parameters.static_assignment.bpr_alpha
 
 
 
@@ -119,6 +124,15 @@ def main(demand, methodCost, methodGreen):
     summary_string += "link flows: link 0 = {},   link 3 = {}\n".format(round(result.flows[0],3), round(result.flows[3],3))
     summary_string += "link costs: link 0 = {},   link 3 = {}\n".format(round(cost_link_a[-1],3), round(cost_link_b[-1],3))
     summary_string += "final green times: link 0 = {},   link 3 = {}\n".format(round(greens[0],3), round(greens[3],3))
+    summary_string += 'Saturations: link 0 = {},    link3 = {}\n'.format(round(result.flows[0]/(assignment.internal_network.links.capacity[0]*greens[0]),5),round(result.flows[3]/(assignment.internal_network.links.capacity[3]*greens[3]),5))
+
+    delays = []
+    for i in range(len(ff_tt)):
+        delays.append(ff_tt[i] * (np.multiply(bpr_a, pow((result.flows[i] / (np.multiply(assignment.internal_network.links.capacity[i] ,greens[i]))), bpr_b))))
+    summary_string +=('Delays: link 1 = {}, link 2 = {}\n'.format(round(delays[0],5), round(delays[3],5)))
+    summary_string +=('Capacities: link 1 = {}, link 2 = {}\n'.format(assignment.internal_network.links.capacity[0], assignment.internal_network.links.capacity[3]))
+    summary_string +=('Pressure: link 1 = {}, link 2 = {}\n'.format(round(assignment.internal_network.links.capacity[0]*delays[0],5), round(assignment.internal_network.links.capacity[3]*delays[3],5)))
+
     #summary_string += "final 5 dos: link 0 = {},   link 3 = {}\n".format(np.round(dos_link_a[-5:],3), np.round(dos_link_a[-5:],3))
     if theoreticalGreenTime != []: 
         summary_string += "final Theoretical green times: link 0 = {},   link 3 = {}\n".format(round(theoreticalGreenTime[0],3), round(theoreticalGreenTime[1],3))
